@@ -1,6 +1,6 @@
-import * as SecureStore from 'expo-secure-store'
-import React from 'react'
-import { Platform, useColorScheme } from 'react-native'
+import * as SecureStore from 'expo-secure-store';
+import React from 'react';
+import { Platform, useColorScheme } from 'react-native';
 import {
   Surface,
   List,
@@ -9,30 +9,30 @@ import {
   IconButton,
   Snackbar,
   Icon,
-} from 'react-native-paper'
+} from 'react-native-paper';
 
-import Locales from '@/lib/locales'
-import { Color, Language, Setting } from '@/lib/types'
-import { Colors, LoadingIndicator, ScreenInfo, styles } from '@/lib/ui'
-import { Languages } from '@/lib/utils'
+import Locales from '@/lib/locales';
+import { Color, Language, Setting } from '@/lib/types';
+import { Colors, LoadingIndicator, ScreenInfo, styles } from '@/lib/ui';
+import { Languages } from '@/lib/utils';
 
 const Settings = () => {
-  const colorScheme = useColorScheme()
-  const [loading, setLoading] = React.useState<boolean>(false)
-  const [message, setMessage] = React.useState({ visible: false, content: '' })
+  const colorScheme = useColorScheme();
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [message, setMessage] = React.useState({ visible: false, content: '' });
   const [settings, setSettings] = React.useState<Setting>({
     color: 'default',
     language: 'auto',
     theme: 'auto',
-  })
+  });
   const [display, setDisplay] = React.useState({
     color: false,
     language: false,
     theme: false,
-  })
+  });
 
   React.useEffect(() => {
-    setLoading(true)
+    setLoading(true);
 
     if (Platform.OS !== 'web') {
       SecureStore.getItemAsync('settings')
@@ -44,17 +44,17 @@ const Settings = () => {
             visible: true,
             content: res.message,
           }),
-        )
+        );
     }
 
-    setLoading(false)
+    setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   const themeColors =
     Colors[
       settings.theme === 'auto' ? (colorScheme ?? 'light') : settings.theme
-    ]
+    ];
 
   return (
     <Surface style={{ flex: 1 }}>
@@ -94,8 +94,8 @@ const Settings = () => {
                         settings.language === 'auto' ? 'check' : undefined
                       }
                       onPress={() => {
-                        setSettings({ ...settings, language: 'auto' })
-                        setDisplay({ ...display, language: false })
+                        setSettings({ ...settings, language: 'auto' });
+                        setDisplay({ ...display, language: false });
                       }}
                     />
                     {Object.entries(Languages).map((lang) => (
@@ -109,8 +109,8 @@ const Settings = () => {
                           setSettings({
                             ...settings,
                             language: lang[0] as Language,
-                          })
-                          setDisplay({ ...display, language: false })
+                          });
+                          setDisplay({ ...display, language: false });
                         }}
                       />
                     ))}
@@ -151,8 +151,8 @@ const Settings = () => {
                         settings.theme === 'auto' ? 'check' : undefined
                       }
                       onPress={() => {
-                        setSettings({ ...settings, theme: 'auto' })
-                        setDisplay({ ...display, theme: false })
+                        setSettings({ ...settings, theme: 'auto' });
+                        setDisplay({ ...display, theme: false });
                       }}
                     />
                     <Menu.Item
@@ -162,8 +162,8 @@ const Settings = () => {
                         settings.theme === 'light' ? 'check' : undefined
                       }
                       onPress={() => {
-                        setSettings({ ...settings, theme: 'light' })
-                        setDisplay({ ...display, theme: false })
+                        setSettings({ ...settings, theme: 'light' });
+                        setDisplay({ ...display, theme: false });
                       }}
                     />
                     <Menu.Item
@@ -173,8 +173,8 @@ const Settings = () => {
                         settings.theme === 'dark' ? 'check' : undefined
                       }
                       onPress={() => {
-                        setSettings({ ...settings, theme: 'dark' })
-                        setDisplay({ ...display, theme: false })
+                        setSettings({ ...settings, theme: 'dark' });
+                        setDisplay({ ...display, theme: false });
                       }}
                     />
                   </Menu>
@@ -248,8 +248,8 @@ const Settings = () => {
                             setSettings({
                               ...settings,
                               color: color as Color,
-                            })
-                            setDisplay({ ...display, color: false })
+                            });
+                            setDisplay({ ...display, color: false });
                           }}
                         />
                       </Surface>
@@ -262,12 +262,12 @@ const Settings = () => {
         </Surface>
       )}
 
-      <Surface elevation={0} style={styles.screen}>
+      {/*       <Surface elevation={0} style={styles.screen}>
         <ScreenInfo
           title={Locales.t('titleSettings')}
           path="app/(tabs)/settings.tsx"
         />
-      </Surface>
+      </Surface> */}
 
       <Button
         mode="contained"
@@ -304,7 +304,7 @@ const Settings = () => {
         {message.content}
       </Snackbar>
     </Surface>
-  )
-}
+  );
+};
 
-export default Settings
+export default Settings;

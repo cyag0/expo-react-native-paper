@@ -1,65 +1,72 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   useFonts,
   JetBrainsMono_400Regular,
-} from '@expo-google-fonts/jetbrains-mono'
-import { NotoSans_400Regular } from '@expo-google-fonts/noto-sans'
-import * as Localization from 'expo-localization'
-import { SplashScreen, Stack } from 'expo-router'
-import * as SecureStore from 'expo-secure-store'
-import React from 'react'
-import { Platform, useColorScheme } from 'react-native'
-import { PaperProvider } from 'react-native-paper'
+} from '@expo-google-fonts/jetbrains-mono';
+import { NotoSans_400Regular } from '@expo-google-fonts/noto-sans';
+import * as Localization from 'expo-localization';
+import { SplashScreen, Stack, useNavigation } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
+import React, { useEffect } from 'react';
+import { Platform, useColorScheme } from 'react-native';
+import { PaperProvider } from 'react-native-paper';
 
-import Locales from '@/lib/locales'
-import { Setting } from '@/lib/types'
-import { StackHeader, Themes } from '@/lib/ui'
+import Locales from '@/lib/locales';
+import { Setting } from '@/lib/types';
+import { StackHeader, Themes } from '@/lib/ui';
 
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
-} from 'expo-router'
+} from 'expo-router';
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
-}
+};
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync()
+SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
   const [loaded, error] = useFonts({
     NotoSans_400Regular,
     JetBrainsMono_400Regular,
     ...MaterialCommunityIcons.font,
-  })
+  });
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   React.useEffect(() => {
-    if (error) throw error
-  }, [error])
+    if (error) throw error;
+  }, [error]);
 
   React.useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync()
+      SplashScreen.hideAsync();
     }
-  }, [loaded])
+  }, [loaded]);
 
   if (!loaded) {
-    return null
+    return null;
   }
 
-  return <RootLayoutNav />
+  return <RootLayoutNav />;
+};
+
+interface User {
+  id: string;
+  username: string;
 }
 
 const RootLayoutNav = () => {
-  const colorScheme = useColorScheme()
+  const navigation = useNavigation();
+  const colorScheme = useColorScheme();
+  const [user, setUser] = React.useState<null | User>({});
   const [settings, setSettings] = React.useState<Setting>({
     theme: 'auto',
     color: 'default',
     language: 'auto',
-  })
+  });
 
   // Load settings from the device
   React.useEffect(() => {
@@ -68,28 +75,36 @@ const RootLayoutNav = () => {
         if (result === null) {
           SecureStore.setItemAsync('settings', JSON.stringify(settings)).then(
             (res) => console.log(res),
-          )
+          );
         }
 
-        setSettings(JSON.parse(result ?? JSON.stringify(settings)))
-      })
+        setSettings(JSON.parse(result ?? JSON.stringify(settings)));
+      });
     } else {
-      setSettings({ ...settings, theme: colorScheme ?? 'light' })
+      setSettings({ ...settings, theme: colorScheme ?? 'light' });
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   React.useEffect(() => {
     if (settings.language === 'auto') {
-      Locales.locale = Localization.getLocales()[0].languageCode ?? 'en'
+      Locales.locale = Localization.getLocales()[0].languageCode ?? 'en';
     } else {
-      Locales.locale = settings.language
+      Locales.locale = settings.language;
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
+  useEffect(() => {
+    if (user === null) {
+      //navigate to auth
+      navigation.navigate('(auth)');
+    } else {
+      // Navigate to tabs
+      navigation.navigate('(tabs)');
+    }
+  }, [user]);
   return (
     <PaperProvider
       theme={
@@ -99,6 +114,7 @@ const RootLayoutNav = () => {
       }
     >
       <Stack
+        initialRouteName="(tabs)"
         screenOptions={{
           animation: 'slide_from_bottom',
           header: (props) => (
@@ -116,7 +132,7 @@ const RootLayoutNav = () => {
         />
       </Stack>
     </PaperProvider>
-  )
-}
+  );
+};
 
-export default RootLayout
+export default RootLayout;
