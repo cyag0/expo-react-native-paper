@@ -59,6 +59,7 @@ interface User {
 }
 
 const RootLayoutNav = () => {
+  const test = 'test';
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const [user, setUser] = React.useState<null | User>({});
